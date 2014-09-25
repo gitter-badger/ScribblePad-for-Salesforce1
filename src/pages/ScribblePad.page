@@ -1,0 +1,73 @@
+<apex:page showheader="false" sidebar="false" docType="html-5.0"  standardStylesheets="false" controller="ScribblePadController">
+<apex:stylesheet value="{!URLFOR($Resource.Mobile_Design_Templates_common, 'common/css/app.min.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Mobile_Design_Templates_common, 'common/js/jQuery2.0.2.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Mobile_Design_Templates_common, 'common/js/jquery.touchwipe.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.Mobile_Design_Templates_common, 'common/js/main.min.js')}"/>
+<script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.SignaturePadForScribblePad, 'jquery.signaturepad.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.SignaturePadForScribblePad, 'jquery.signaturepad.min.js')}"/>
+
+<script>
+    var signaturePadApi, padWidth, padHeight;
+    $(function(){
+        initSigpad();
+
+        setTimeout(function(){
+        　Sfdc.canvas.publisher.publish({name:　'publisher.setValidForSubmit', payload:'true'
+        　});
+        },2000);         
+                
+        Sfdc.canvas.publisher.subscribe({name: "publisher.post", 
+            onData:function(e) {
+                saveScribblePadJS();
+            }
+        });
+    });
+    
+    function closeDialog() {
+        Sfdc.canvas.publisher.publish({name: "publisher.close", payload:{ refresh:"true"}});
+    }
+    
+    function saveScribblePadJS(){
+        var sigData = signaturePadApi.getSignatureImage();
+        saveScribblePad(sigData);
+    }
+    
+    function initSigpad(){
+        //signature setting
+        if(innerWidth!=0){ padWidth= innerWidth;}else{padWidth = 516;}
+        if(innerHeight!=0){ padHeight= innerHeight - 40;}else{padHeight = 200;}
+        signaturePadApi = $('.sigPad').signaturePad({
+            drawOnly:true,
+            penWidth:1,
+            penColour:'#000000',
+            lineTop:0,
+        });
+        $(".pad").attr({width:padWidth-4, Height:padHeight-4});
+        $('.sigPad').css('width',padWidth);  
+        $('.sigWrapper').css('height',padHeight); 
+    }
+</script>
+
+<style>
+    .sigPad{ margin: 0; padding: 0;}
+    .sigWrapper{ clear: both; border: 2px solid #ccc;}
+    .sigPad button{ width:100%; text-align:center; margin:5px 0 0 0;}
+</style>
+
+<div id="mainContainer">
+    <form method="post" action="" class="sigPad">
+        <div class="sig sigWrapper">
+            <canvas  class="pad"/>
+            <input type="hidden" name="output" class="output"/>
+        </div>
+        <div><button class="clearButton">Clear</button></div>
+    </form>
+    <apex:form >
+        <apex:actionFunction action="{!saveScribblePad}" name="saveScribblePad" rerender="_dummy" oncomplete="closeDialog();">
+            <apex:param value="" assignTo="{!sigData}" name="sigData"/>
+        </apex:actionFunction> 
+    </apex:form>
+</div>
+</apex:page>

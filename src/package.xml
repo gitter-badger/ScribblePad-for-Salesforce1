@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>ScribblePadController</members>
+        <members>ScribblePadControllerTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>ScribblePad</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Mobile_Design_Templates_common</members>
+        <members>ScribblePadIcon</members>
+        <members>SignaturePadForScribblePad</members>
+        <name>StaticResource</name>
+    </types>
+    <version>31.0</version>
+</Package>
